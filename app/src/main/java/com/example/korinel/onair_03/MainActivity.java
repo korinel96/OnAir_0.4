@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         //done
         //установка поворота экрана
         final Spinner spinner3 = (Spinner) findViewById(R.id.rotator);
-        String[] rotation_list=new String[]{"90","180","270"};
+        String[] rotation_list=new String[]{"90","180","270","0"};
         ArrayAdapter<String> AdapterForRotation= new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item, rotation_list);
         AdapterForFrames.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner3.setAdapter(AdapterForRotation);

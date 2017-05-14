@@ -288,7 +288,10 @@ public abstract class MediaStream implements Stream {
 		if (mStreaming) {
 			try {
 				if (mMode==MODE_MEDIARECORDER_API) {
-
+                    mPacketizer.stop();
+                    mMediaCodec.stop();
+                    mMediaCodec.release();
+                    mMediaCodec = null;
 					/*
 					mMediaRecorder.stop();
 					mMediaRecorder.release();

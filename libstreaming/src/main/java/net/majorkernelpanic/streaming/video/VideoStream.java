@@ -327,6 +327,7 @@ public abstract class VideoStream extends MediaStream {
 	/**
 	 * Video encoding is done by a MediaRecorder.
 	 */
+    @SuppressLint("NewApi")
 	protected void encodeWithMediaRecorder() throws IOException, ConfNotSupportedException {
 
 		Log.d(TAG,"Video encoded using the MediaCodec API with a buffer");
@@ -523,6 +524,7 @@ public abstract class VideoStream extends MediaStream {
 		mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,debugger.getEncoderColorFormat());
 		mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
 		mMediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+
 		mMediaCodec.start();
 
 		Camera.PreviewCallback callback = new Camera.PreviewCallback() {
@@ -537,17 +539,21 @@ public abstract class VideoStream extends MediaStream {
 					//Log.d(TAG,"Measured: "+1000000L/(now-oldnow)+" fps.");
 				}
 				try {
-					int bufferIndex = mMediaCodec.dequeueInputBuffer(500000);
+					int bufferIndex = 0;
+					try {
+					bufferIndex = mMediaCodec.dequeueInputBuffer(500000);} catch(RuntimeException e) {Log.e(TAG, "At inputBuffer");}
 					if (bufferIndex>=0) {
 						inputBuffers[bufferIndex].clear();
 						if (data == null) Log.e(TAG,"Symptom of the \"Callback buffer was to small\" problem...");
-						else convertor.convert(data, inputBuffers[bufferIndex]);
-						mMediaCodec.queueInputBuffer(bufferIndex, 0, inputBuffers[bufferIndex].position(), now, 0);
+						else try {convertor.convert(data, inputBuffers[bufferIndex]);} catch(RuntimeException e) {Log.e(TAG,"At convertor");}
+						try{
+						mMediaCodec.queueInputBuffer(bufferIndex, 0, inputBuffers[bufferIndex].position(), now, 0);}
+						catch (RuntimeException e) {Log.e(TAG,"At inputBuffer 2");}
 					} else {
 						Log.e(TAG,"No buffer available !");
 					}
 				} finally {
-					mCamera.addCallbackBuffer(data);
+				try {	mCamera.addCallbackBuffer(data);} catch(RuntimeException e) { Log.e(TAG,"Failed!!");}
 				}				
 			}
 		};

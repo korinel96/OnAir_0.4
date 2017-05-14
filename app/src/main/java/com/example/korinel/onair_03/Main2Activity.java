@@ -65,7 +65,6 @@ public class Main2Activity extends AppCompatActivity {
                     .setAudioQuality(new AudioQuality(8000, 16000));
         }
         Main2Activity.this.startService(new Intent(this,RtspServer.class));
-
     }
 
     /**/
@@ -74,5 +73,7 @@ public class Main2Activity extends AppCompatActivity {
         Main2Activity.this.stopService(new Intent(Main2Activity.this,RtspServer.class));
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
+
     }
 }
